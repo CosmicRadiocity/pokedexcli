@@ -14,6 +14,7 @@ type cliCommand struct {
 }
 
 type config struct {
+	pokeapiClient pokeapi.Client
 	Next string
 	Previous string
 }
@@ -42,12 +43,14 @@ func commandHelp(cfg *config) error {
 }
 
 func commandMap(cfg *config) error {
-	data, err := fetchLocationAreaBatch(cfg.Next, cfg)
+	data, err := cfg.pokeapiClient.fetchLocationAreaBatch(cfg.Next)
 	if err != nil { 
 		return err
 	}
-	for _, name := range data {
-		fmt.Println(name)
+	cfg.Next = data.Next
+	cfg.Previous = data.Previous
+	for _, loc := range data {
+		fmt.Println(loc.Name)
 	}
 	return nil
 }
@@ -57,12 +60,14 @@ func commandMapB(cfg *config) error {
 		fmt.Println("This is the first page.")
 		return nil
 	}
-	data, err := fetchLocationAreaBatch(cfg.Previous, cfg)
+	data, err := cfg.pokeapiClient.fetchLocationAreaBatch(cfg.Next)
 	if err != nil { 
 		return err
 	}
-	for _, name := range data {
-		fmt.Println(name)
+	cfg.Next = data.Next
+	cfg.Previous = data.Previous
+	for _, loc := range data {
+		fmt.Println(loc.Name)
 	}
 	return nil
 }

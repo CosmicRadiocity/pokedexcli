@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"bufio"
 	"os"
+	"time"
+
+	"github.com/CosmicRadiocity/pokedexcli/internal/pokeapi"
 )
 
 func main() {
 	commands := getCommands()
 	scanner := bufio.NewScanner(os.Stdin)
 	cfg := config{
-		Next: "https://pokeapi.co/api/v2/location-area/",
+		pokeapiClient: pokeapi.NewClient(5 * time.Second),
+		Next: pokeapi.baseURL + "/location-area/",
 		Previous: "",
 	}
 	for {
