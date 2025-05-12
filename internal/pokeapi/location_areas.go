@@ -17,9 +17,12 @@ type LocationAreaBatch struct {
 	} `json:"results"`
 }
 
-func (c *Client) fetchLocationAreaBatch(url *string) (LocationAreaBatch, error) {
+func (c *Client) FetchLocationAreaBatch(url string) (LocationAreaBatch, error) {
+	if url == "" {
+		url = baseURL + "/location-area"
+	}
 
-	req, err := http.NewRequest("GET", *url, nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return LocationAreaBatch{}, fmt.Errorf("Error creating request: %v", err)
 	}

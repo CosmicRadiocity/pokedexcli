@@ -4,6 +4,7 @@ import (
 	"strings"
 	"fmt"
 	"os"
+
 	"github.com/CosmicRadiocity/pokedexcli/internal/pokeapi"
 )
 
@@ -16,7 +17,7 @@ type cliCommand struct {
 type config struct {
 	pokeapiClient pokeapi.Client
 	Next string
-	Previous string
+	Previous *string
 }
 
 func cleanInput(text string) []string{
@@ -43,30 +44,31 @@ func commandHelp(cfg *config) error {
 }
 
 func commandMap(cfg *config) error {
-	data, err := cfg.pokeapiClient.fetchLocationAreaBatch(cfg.Next)
+	data, err := cfg.pokeapiClient.FetchLocationAreaBatch(cfg.Next)
+	
 	if err != nil { 
 		return err
 	}
-	cfg.Next = data.Next
+	cfg.Next = *data.Next
 	cfg.Previous = data.Previous
-	for _, loc := range data {
+	for _, loc := range data.Results {
 		fmt.Println(loc.Name)
 	}
 	return nil
 }
 
 func commandMapB(cfg *config) error {
-	if cfg.Previous == "" {
+	if cfg.Previous == nil {
 		fmt.Println("This is the first page.")
 		return nil
 	}
-	data, err := cfg.pokeapiClient.fetchLocationAreaBatch(cfg.Next)
+	data, err := cfg.pokeapiClient.FetchLocationAreaBatch(cfg.Next)
 	if err != nil { 
 		return err
 	}
-	cfg.Next = data.Next
+	cfg.Next = *data.Next
 	cfg.Previous = data.Previous
-	for _, loc := range data {
+	for _, loc := range data.Results {
 		fmt.Println(loc.Name)
 	}
 	return nil

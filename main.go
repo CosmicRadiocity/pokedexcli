@@ -12,10 +12,11 @@ import (
 func main() {
 	commands := getCommands()
 	scanner := bufio.NewScanner(os.Stdin)
+	client := pokeapi.NewClient(5 * time.Second)
 	cfg := config{
-		pokeapiClient: pokeapi.NewClient(5 * time.Second),
-		Next: pokeapi.baseURL + "/location-area/",
-		Previous: "",
+		pokeapiClient: client,
+		Next: "",
+		Previous: nil,
 	}
 	for {
 		fmt.Print("Pokedex > ")

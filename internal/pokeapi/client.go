@@ -9,8 +9,8 @@ type Client struct {
 	httpClient http.Client
 }
 
-func newClient(timeout time.Duration) Client {
-	return Client {
+func NewClient(timeout time.Duration) Client {
+	return Client{
 		httpClient: http.Client{
 			Timeout: timeout,
 		},
