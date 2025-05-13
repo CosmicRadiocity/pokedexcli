@@ -18,25 +18,36 @@ type LocationAreaBatch struct {
 }
 
 func (c *Client) FetchLocationAreaBatch(url string) (LocationAreaBatch, error) {
-	if url == "" {
-		url = baseURL + "/location-area"
-	}
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return LocationAreaBatch{}, fmt.Errorf("Error creating request: %v", err)
-	}
+	var data []byte
+	var err error
+
+	entry, ok := c.cache.Get(url)
+	if ok {
+		data = entry
+	} else {
+		if url == "" {
+			url = baseURL + "/location-area"
+		}
+
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return LocationAreaBatch{}, fmt.Errorf("Error creating request: %v", err)
+		}
 
 
-	res, err := c.httpClient.Do(req)
-	if err != nil {
-		return LocationAreaBatch{}, fmt.Errorf("Error request next locations: %v", err)
-	}
-	defer res.Body.Close()
+		res, err := c.httpClient.Do(req)
+		if err != nil {
+			return LocationAreaBatch{}, fmt.Errorf("Error request next locations: %v", err)
+		}
+		defer res.Body.Close()
 
-	data, err := io.ReadAll(res.Body)
-	if err != nil {
-		return LocationAreaBatch{}, fmt.Errorf("Error reading response body: %v", err)
+		data, err = io.ReadAll(res.Body)
+		if err != nil {
+			return LocationAreaBatch{}, fmt.Errorf("Error reading response body: %v", err)
+		}
+
+		c.cache.Add(url, data)
 	}
 
 	var locAreas LocationAreaBatch

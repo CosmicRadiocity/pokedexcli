@@ -36,7 +36,7 @@ func commandHelp(cfg *config) error {
 	commands := getCommands()
 
 	fmt.Println("Welcome to the Pokedex!")
-	fmt.Println("Usage:\n")
+	fmt.Println("Usage: ")
 	for _, cmd := range commands {
 		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
 	}
@@ -44,6 +44,7 @@ func commandHelp(cfg *config) error {
 }
 
 func commandMap(cfg *config) error {
+	
 	data, err := cfg.pokeapiClient.FetchLocationAreaBatch(cfg.Next)
 	
 	if err != nil { 
@@ -62,7 +63,7 @@ func commandMapB(cfg *config) error {
 		fmt.Println("This is the first page.")
 		return nil
 	}
-	data, err := cfg.pokeapiClient.FetchLocationAreaBatch(cfg.Next)
+	data, err := cfg.pokeapiClient.FetchLocationAreaBatch(*cfg.Previous)
 	if err != nil { 
 		return err
 	}

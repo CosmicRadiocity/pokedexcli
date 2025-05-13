@@ -12,7 +12,7 @@ import (
 func main() {
 	commands := getCommands()
 	scanner := bufio.NewScanner(os.Stdin)
-	client := pokeapi.NewClient(5 * time.Second)
+	client := pokeapi.NewClient(5 * time.Second, time.Minute*5)
 	cfg := config{
 		pokeapiClient: client,
 		Next: "",
