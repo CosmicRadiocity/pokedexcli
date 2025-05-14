@@ -11,7 +11,7 @@ import (
 type cliCommand struct {
 	name string
 	description string
-	callback func(*config) error
+	callback func(*config, []string) error
 }
 
 type config struct {
@@ -26,13 +26,13 @@ func cleanInput(text string) []string{
 	return words
 }
 
-func commandExit(cfg *config) error {
+func commandExit(cfg *config, params []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	defer os.Exit(0)
 	return fmt.Errorf("Unknown error exiting the program")
 }
 
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, params []string) error {
 	commands := getCommands()
 
 	fmt.Println("Welcome to the Pokedex!")
@@ -43,7 +43,7 @@ func commandHelp(cfg *config) error {
 	return nil
 }
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, params []string) error {
 	
 	data, err := cfg.pokeapiClient.FetchLocationAreaBatch(cfg.Next)
 	
@@ -58,7 +58,7 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapB(cfg *config) error {
+func commandMapB(cfg *config, params []string) error {
 	if cfg.Previous == nil {
 		fmt.Println("This is the first page.")
 		return nil
@@ -71,6 +71,23 @@ func commandMapB(cfg *config) error {
 	cfg.Previous = data.Previous
 	for _, loc := range data.Results {
 		fmt.Println(loc.Name)
+	}
+	return nil
+}
+
+func commandExplore(cfg *config, params []string) error {
+	if len(params) == 0 {
+		return fmt.Errorf("Missing parameter. Usage: explore <area name>")
+	}
+	name := params[0]
+	fmt.Printf("Exploring %s...\n", name)
+	data, err := cfg.pokeapiClient.FetchLocationAreaDetails(name)
+	if err != nil{
+		return err
+	}
+	fmt.Println("Found Pokemon:")
+	for _, encounter := range data.PokemonEncounters {
+		fmt.Printf(" - %s\n", encounter.Pokemon.Name)
 	}
 	return nil
 }
@@ -96,6 +113,11 @@ func getCommands() map[string]cliCommand {
 			name: "mapb",
 			description: "Displays the previous 20 location areas",
 			callback: commandMapB,
+		},
+		"explore": {
+			name: "explore",
+			description: "Displays the pokemon found in given area. Usage : explore <area name>",
+			callback: commandExplore,
 		},
 	}
 }

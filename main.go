@@ -26,7 +26,11 @@ func main() {
 			if cmd, ok := commands[cleaned[0]]; !ok {
 				fmt.Println("Unknown command")
 			} else {
-				err := cmd.callback(&cfg)
+				var params []string
+				if len(cleaned) > 1 {
+					params = cleaned[1:len(cleaned)]
+				}
+				err := cmd.callback(&cfg, params)
 				if err != nil {fmt.Printf("%v\n", err)}
 			}
 		}
