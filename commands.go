@@ -4,6 +4,7 @@ import (
 	"strings"
 	"fmt"
 	"os"
+	"math/rand"
 
 	"github.com/CosmicRadiocity/pokedexcli/internal/pokeapi"
 )
@@ -92,6 +93,31 @@ func commandExplore(cfg *config, params []string) error {
 	return nil
 }
 
+func commandCatch(cfg *config, params []string) error {
+	if len(params) == 0 {
+		return fmt.Errorf("Missing parameter. Usage: catch <pokemon name>")
+	}
+	name := params[0]
+	fmt.Printf("Throwing a pokeball at %s...\n", name)
+	data, err := cfg.pokeapiClient.FetchPokemon(name)
+	if err != nil{
+		return err
+	}
+	
+
+	chance := (999 - data.BaseExperience) / 20
+	num :=  rand.Intn(100)
+	fmt.Printf("Debug: Chance = %d | RandNum = %d\n", chance, num)
+	if num <= chance {
+		fmt.Printf("Caught %s!\n", name)
+		cfg.pokeapiClient.AddPokemon(name, data)
+		return nil
+	}
+
+	fmt.Printf("%s escaped...\n", name)
+	return nil
+}
+
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand {
 		"exit": {
@@ -118,6 +144,11 @@ func getCommands() map[string]cliCommand {
 			name: "explore",
 			description: "Displays the pokemon found in given area. Usage : explore <area name>",
 			callback: commandExplore,
+		},
+		"catch": {
+			name: "catch",
+			description: "Attempt to catch the given pokemon. Usage : catch <pokemon name>",
+			callback: commandCatch,
 		},
 	}
 }
