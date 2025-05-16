@@ -105,16 +105,40 @@ func commandCatch(cfg *config, params []string) error {
 	}
 	
 
-	chance := (999 - data.BaseExperience) / 20
+	chance := (999 - data.BaseExperience) / 15
 	num :=  rand.Intn(100)
-	fmt.Printf("Debug: Chance = %d | RandNum = %d\n", chance, num)
 	if num <= chance {
 		fmt.Printf("Caught %s!\n", name)
-		cfg.pokeapiClient.AddPokemon(name, data)
+		cfg.pokeapiClient.AddPokemonToPokedex(name, data)
 		return nil
 	}
 
 	fmt.Printf("%s escaped...\n", name)
+	return nil
+}
+
+func commandInspect(cfg *config, params []string) error {
+	if len(params) == 0 {
+		return fmt.Errorf("Missing parameter. Usage: inspect <pokemon name>")
+	}
+
+	pokemon, ok := cfg.pokeapiClient.GetPokemonFromPokedex(params[0])
+	if !ok {
+		fmt.Println("You have not caught that pokemon.")
+		return nil
+	}
+
+	fmt.Printf("Name: %s\n", pokemon.Name)
+	fmt.Printf("Height: %d\n", pokemon.Height)
+	fmt.Printf("Weight: %d\n", pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf(" -%s: %d\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, pokemonType := range pokemon.Types {
+		fmt.Printf(" -%s\n", pokemonType.Type.Name)
+	}
 	return nil
 }
 
@@ -147,8 +171,13 @@ func getCommands() map[string]cliCommand {
 		},
 		"catch": {
 			name: "catch",
-			description: "Attempt to catch the given pokemon. Usage : catch <pokemon name>",
+			description: "Attempt to catch the given Pokemon. Usage : catch <pokemon name>",
 			callback: commandCatch,
+		},
+		"inspect": {
+			name: "inspect",
+			description: "Get information on a Pokemon you've caught. Usage : inspect <pokemon name>",
+			callback: commandInspect,
 		},
 	}
 }

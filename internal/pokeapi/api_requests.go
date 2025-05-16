@@ -109,6 +109,10 @@ func (c *Client) FetchDataFromUrl(url string) ([]byte, error) {
 	return data, nil
 }
 
-func (c *Client) AddPokemon(name string, pokemon Pokemon) {
+func (c *Client) AddPokemonToPokedex(name string, pokemon Pokemon) {
 	c.pokedex.AddPokemon(name, pokemon)
+}
+
+func (c *Client) GetPokemonFromPokedex(name string) (Pokemon, bool) {
+	return c.pokedex.GetPokemon(name)
 }
