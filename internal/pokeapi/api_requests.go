@@ -109,10 +109,16 @@ func (c *Client) FetchDataFromUrl(url string) ([]byte, error) {
 	return data, nil
 }
 
+// Pokedex access functions
+
 func (c *Client) AddPokemonToPokedex(name string, pokemon Pokemon) {
 	c.pokedex.AddPokemon(name, pokemon)
 }
 
 func (c *Client) GetPokemonFromPokedex(name string) (Pokemon, bool) {
 	return c.pokedex.GetPokemon(name)
+}
+
+func (c *Client) GetAllPokemonFromPokedex() ([]Pokemon) {
+	return c.pokedex.GetAllPokemon()
 }

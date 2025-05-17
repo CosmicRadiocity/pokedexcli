@@ -31,3 +31,13 @@ func (p *Pokedex) GetPokemon(name string) (Pokemon, bool) {
 	pokemon, ok := p.entries[name]
 	return pokemon, ok
 }
+
+func (p *Pokedex) GetAllPokemon() ([]Pokemon) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	pokemonList := make([]Pokemon, 0)
+	for _, pokemon := range p.entries {
+		pokemonList = append(pokemonList, pokemon)
+	}
+	return pokemonList
+}

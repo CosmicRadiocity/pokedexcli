@@ -142,6 +142,18 @@ func commandInspect(cfg *config, params []string) error {
 	return nil
 }
 
+func commandPokedex(cfg *config, params []string) error {
+	pokemon := cfg.pokeapiClient.GetAllPokemonFromPokedex()
+	if len(pokemon) == 0 {
+		return fmt.Errorf("You haven't caught any Pokemon!")
+	}
+	fmt.Println("Your Pokedex:")
+	for _, poke := range pokemon {
+		fmt.Printf(" -%s\n", poke.Name)
+	}
+	return nil
+}
+
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand {
 		"exit": {
@@ -178,6 +190,11 @@ func getCommands() map[string]cliCommand {
 			name: "inspect",
 			description: "Get information on a Pokemon you've caught. Usage : inspect <pokemon name>",
 			callback: commandInspect,
+		},
+		"pokedex": {
+			name: "pokedex",
+			description: "List all the Pokemon you've caught.",
+			callback: commandPokedex,
 		},
 	}
 }
